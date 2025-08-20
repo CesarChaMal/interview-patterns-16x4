@@ -2,7 +2,7 @@ import scala.collection.mutable
 import scala.util.control.Breaks._
 
 /**
- * 15 Essential DSA Patterns for Coding Interviews - Scala Implementation
+ * 16 Essential DSA Patterns for Coding Interviews - Scala Implementation
  * Idiomatic Scala with functional style where appropriate
  */
 object ScalaDSAPatterns {
@@ -223,7 +223,7 @@ object ScalaDSAPatterns {
     for (i <- 0 until n) {
       while (dq.nonEmpty && dq.head <= i - k) dq.removeHead()
       while (dq.nonEmpty && nums(dq.last) <= nums(i)) dq.removeLast()
-      dq.addLast(i)
+      dq.append(i)
       if (i >= k - 1) result += nums(dq.head)
     }
     result.toArray

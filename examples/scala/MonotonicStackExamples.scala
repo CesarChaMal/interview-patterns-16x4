@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Monotonic Stack Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object MonotonicStackExamples {
+object ScalaMonotonicStackExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Binary Search on Answer Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object BinarySearchAnswerExamples {
+object ScalaBinarySearchAnswerExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

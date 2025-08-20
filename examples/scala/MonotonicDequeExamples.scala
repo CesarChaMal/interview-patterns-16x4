@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Monotonic Deque Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object MonotonicDequeExamples {
+object ScalaMonotonicDequeExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

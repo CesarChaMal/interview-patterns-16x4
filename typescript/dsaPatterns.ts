@@ -1,5 +1,5 @@
 /**
- * 15 Essential DSA Patterns for Coding Interviews - TypeScript Implementation
+ * 16 Essential DSA Patterns for Coding Interviews - TypeScript Implementation
  * Modern TypeScript with strong typing and clean interfaces
  */
 

@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Topological Sort Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object TopologicalSortExamples {
+object ScalaTopologicalSortExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

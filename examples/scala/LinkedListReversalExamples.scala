@@ -4,7 +4,7 @@ import scala.collection.mutable
  * In-place Linked List Reversal Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object LinkedListReversalExamples {
+object ScalaLinkedListReversalExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

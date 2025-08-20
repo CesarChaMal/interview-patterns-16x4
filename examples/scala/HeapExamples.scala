@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Heap (Top-K) Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object HeapExamples {
+object ScalaHeapExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

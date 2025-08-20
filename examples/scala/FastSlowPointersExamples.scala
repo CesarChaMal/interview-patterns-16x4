@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Fast/Slow Pointers Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object FastSlowPointersExamples {
+object ScalaFastSlowPointersExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Sliding Window Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object SlidingWindowExamples {
+object ScalaSlidingWindowExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

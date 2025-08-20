@@ -4,7 +4,7 @@ import scala.collection.mutable
  * Backtracking Pattern - 10 Essential Problems
  * Minimal implementations for coding interviews
  */
-object BacktrackingExamples {
+object ScalaBacktrackingExamples {
   
   // Problem 1: [Add specific problem here]
   def problem1(nums: Array[Int]): Int = {

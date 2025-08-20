@@ -96,6 +96,8 @@
                             <sources>
                                 <source>${project.basedir}/java</source>
                                 <source>${project.basedir}/scala</source>
+                                <source>${project.basedir}/examples/java</source>
+                                <source>${project.basedir}/examples/scala</source>
                             </sources>
                         </configuration>
                     </execution>
