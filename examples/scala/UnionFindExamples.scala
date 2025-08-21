@@ -1,74 +1,259 @@
 import scala.collection.mutable
 
-/**
- * Union-Find Pattern - 10 Essential Problems
- * Minimal implementations for coding interviews
- */
-object ScalaUnionFindExamples {
+class ScalaUnionFind(n: Int) {
+  private val parent = Array.range(0, n)
+  private val rank = Array.fill(n)(0)
+  var components = n
   
-  // Problem 1: [Add specific problem here]
-  def problem1(nums: Array[Int]): Int = {
-    // TODO: Implement problem 1
-    0
+  def find(x: Int): Int = {
+    if (parent(x) != x) {
+      parent(x) = find(parent(x))
+    }
+    parent(x)
   }
   
-  // Problem 2: [Add specific problem here]
-  def problem2(nums: Array[Int]): Int = {
-    // TODO: Implement problem 2
-    0
+  def union(x: Int, y: Int): Boolean = {
+    val px = find(x)
+    val py = find(y)
+    if (px == py) return false
+    
+    if (rank(px) < rank(py)) {
+      parent(px) = py
+    } else if (rank(px) > rank(py)) {
+      parent(py) = px
+    } else {
+      parent(py) = px
+      rank(px) += 1
+    }
+    components -= 1
+    true
   }
   
-  // Problem 3: [Add specific problem here]
-  def problem3(nums: Array[Int]): Int = {
-    // TODO: Implement problem 3
-    0
+  def connected(x: Int, y: Int): Boolean = find(x) == find(y)
+}
+
+object UnionFindExamples {
+  
+  // 1. Number of Islands
+  def numIslands(grid: Array[Array[Char]]): Int = {
+    if (grid.isEmpty) return 0
+    val m = grid.length
+    val n = grid(0).length
+    val uf = new UnionFind(m * n)
+    var islands = 0
+    
+    for (i <- grid.indices; j <- grid(0).indices) {
+      if (grid(i)(j) == '1') {
+        islands += 1
+        val curr = i * n + j
+        if (i > 0 && grid(i-1)(j) == '1' && uf.union(curr, (i-1) * n + j)) islands -= 1
+        if (j > 0 && grid(i)(j-1) == '1' && uf.union(curr, i * n + j - 1)) islands -= 1
+      }
+    }
+    islands
   }
   
-  // Problem 4: [Add specific problem here]
-  def problem4(nums: Array[Int]): Int = {
-    // TODO: Implement problem 4
-    0
+  // 2. Friend Circles
+  def findCircleNum(isConnected: Array[Array[Int]]): Int = {
+    val n = isConnected.length
+    val uf = new UnionFind(n)
+    
+    for (i <- 0 until n; j <- i + 1 until n) {
+      if (isConnected(i)(j) == 1) {
+        uf.union(i, j)
+      }
+    }
+    uf.components
   }
   
-  // Problem 5: [Add specific problem here]
-  def problem5(nums: Array[Int]): Int = {
-    // TODO: Implement problem 5
-    0
+  // 3. Graph Valid Tree
+  def validTree(n: Int, edges: Array[Array[Int]]): Boolean = {
+    if (edges.length != n - 1) return false
+    val uf = new UnionFind(n)
+    
+    for (Array(a, b) <- edges) {
+      if (!uf.union(a, b)) return false
+    }
+    uf.components == 1
   }
   
-  // Problem 6: [Add specific problem here]
-  def problem6(nums: Array[Int]): Int = {
-    // TODO: Implement problem 6
-    0
+  // 4. Accounts Merge
+  def accountsMerge(accounts: List[List[String]]): List[List[String]] = {
+    val emailToId = mutable.Map[String, Int]()
+    val emailToName = mutable.Map[String, String]()
+    var id = 0
+    
+    for (account <- accounts) {
+      val name = account.head
+      for (email <- account.tail) {
+        if (!emailToId.contains(email)) {
+          emailToId(email) = id
+          id += 1
+        }
+        emailToName(email) = name
+      }
+    }
+    
+    val uf = new UnionFind(id)
+    for (account <- accounts) {
+      val firstId = emailToId(account(1))
+      for (email <- account.drop(2)) {
+        uf.union(firstId, emailToId(email))
+      }
+    }
+    
+    val groups = mutable.Map[Int, mutable.ListBuffer[String]]()
+    for ((email, emailId) <- emailToId) {
+      val root = uf.find(emailId)
+      groups.getOrElseUpdate(root, mutable.ListBuffer[String]()) += email
+    }
+    
+    groups.values.map { emails =>
+      val sortedEmails = emails.sorted.toList
+      emailToName(sortedEmails.head) :: sortedEmails
+    }.toList
   }
   
-  // Problem 7: [Add specific problem here]
-  def problem7(nums: Array[Int]): Int = {
-    // TODO: Implement problem 7
-    0
+  // 5. Redundant Connection
+  def findRedundantConnection(edges: Array[Array[Int]]): Array[Int] = {
+    val uf = new UnionFind(edges.length + 1)
+    for (Array(a, b) <- edges) {
+      if (!uf.union(a, b)) return Array(a, b)
+    }
+    Array.empty
   }
   
-  // Problem 8: [Add specific problem here]
-  def problem8(nums: Array[Int]): Int = {
-    // TODO: Implement problem 8
-    0
+  // 6. Most Stones Removed
+  def removeStones(stones: Array[Array[Int]]): Int = {
+    val uf = new UnionFind(20000)
+    val seen = mutable.Set[Int]()
+    
+    for (Array(x, y) <- stones) {
+      uf.union(x, y + 10000)
+      seen += x
+      seen += y + 10000
+    }
+    
+    val roots = seen.map(uf.find).toSet
+    stones.length - roots.size
   }
   
-  // Problem 9: [Add specific problem here]
-  def problem9(nums: Array[Int]): Int = {
-    // TODO: Implement problem 9
-    0
+  // 7. Satisfiability of Equality Equations
+  def equationsPossible(equations: Array[String]): Boolean = {
+    val uf = new UnionFind(26)
+    
+    for (eq <- equations) {
+      if (eq(1) == '=') {
+        uf.union(eq(0) - 'a', eq(3) - 'a')
+      }
+    }
+    
+    for (eq <- equations) {
+      if (eq(1) == '!' && uf.connected(eq(0) - 'a', eq(3) - 'a')) {
+        return false
+      }
+    }
+    true
   }
   
-  // Problem 10: [Add specific problem here]
-  def problem10(nums: Array[Int]): Int = {
-    // TODO: Implement problem 10
-    0
+  // 8. Swim in Rising Water
+  def swimInWater(grid: Array[Array[Int]]): Int = {
+    val n = grid.length
+    val directions = Array((0, 1), (1, 0), (0, -1), (-1, 0))
+    val heap = mutable.PriorityQueue[(Int, Int, Int)]()(Ordering.by(-_._1))
+    val visited = mutable.Set[(Int, Int)]()
+    
+    heap.enqueue((grid(0)(0), 0, 0))
+    
+    while (heap.nonEmpty) {
+      val (time, x, y) = heap.dequeue()
+      
+      if (visited.contains((x, y))) {
+        // continue
+      } else {
+        visited += ((x, y))
+        
+        if (x == n - 1 && y == n - 1) return time
+        
+        for ((dx, dy) <- directions) {
+          val nx = x + dx
+          val ny = y + dy
+          if (nx >= 0 && nx < n && ny >= 0 && ny < n && !visited.contains((nx, ny))) {
+            heap.enqueue((math.max(time, grid(nx)(ny)), nx, ny))
+          }
+        }
+      }
+    }
+    -1
+  }
+  
+  // 9. Connecting Cities With Minimum Cost
+  def minimumCost(n: Int, connections: Array[Array[Int]]): Int = {
+    val sortedConnections = connections.sortBy(_(2))
+    val uf = new UnionFind(n + 1)
+    var cost = 0
+    var edges = 0
+    
+    for (Array(a, b, c) <- sortedConnections) {
+      if (uf.union(a, b)) {
+        cost += c
+        edges += 1
+        if (edges == n - 1) return cost
+      }
+    }
+    
+    if (edges == n - 1) cost else -1
+  }
+  
+  // 10. Number of Operations to Make Network Connected
+  def makeConnected(n: Int, connections: Array[Array[Int]]): Int = {
+    if (connections.length < n - 1) return -1
+    
+    val uf = new UnionFind(n)
+    for (Array(a, b) <- connections) {
+      uf.union(a, b)
+    }
+    uf.components - 1
   }
   
   def main(args: Array[String]): Unit = {
     println("=== Union-Find Examples ===")
-    println("TODO: Add test cases")
-    println("All union-find examples ready for implementation!")
+    
+    // Test 1: Number of Islands
+    val grid = Array(Array('1','1','1','1','0'),Array('1','1','0','1','0'),Array('1','1','0','0','0'),Array('0','0','0','0','0'))
+    println(s"Num Islands: ${numIslands(grid)}")
+    
+    // Test 2: Friend Circles
+    val isConnected = Array(Array(1,1,0),Array(1,1,0),Array(0,0,1))
+    println(s"Find Circle Num: ${findCircleNum(isConnected)}")
+    
+    // Test 3: Graph Valid Tree
+    println(s"Valid Tree(5, [[0,1],[0,2],[0,3],[1,4]]): ${validTree(5, Array(Array(0,1),Array(0,2),Array(0,3),Array(1,4)))}")
+    
+    // Test 4: Accounts Merge
+    val accounts = List(List("John","johnsmith@mail.com","john_newyork@mail.com"),
+                       List("John","johnsmith@mail.com","john00@mail.com"),
+                       List("Mary","mary@mail.com"),
+                       List("John","johnnybravo@mail.com"))
+    println(s"Accounts Merge: ${accountsMerge(accounts)}")
+    
+    // Test 5: Redundant Connection
+    println(s"Find Redundant Connection([[1,2],[1,3],[2,3]]): ${findRedundantConnection(Array(Array(1,2),Array(1,3),Array(2,3))).mkString("[", ",", "]")}")
+    
+    // Test 6: Most Stones Removed
+    println(s"Remove Stones([[0,0],[0,1],[1,0],[1,2],[2,1],[2,2]]): ${removeStones(Array(Array(0,0),Array(0,1),Array(1,0),Array(1,2),Array(2,1),Array(2,2)))}")
+    
+    // Test 7: Satisfiability of Equality Equations
+    println(s"Equations Possible(['a==b','b!=a']): ${equationsPossible(Array("a==b","b!=a"))}")
+    
+    // Test 8: Swim in Rising Water
+    val swimGrid = Array(Array(0,2),Array(1,3))
+    println(s"Swim in Water: ${swimInWater(swimGrid)}")
+    
+    // Test 9: Connecting Cities
+    println(s"Minimum Cost(3, [[1,2,5],[1,3,6],[2,3,1]]): ${minimumCost(3, Array(Array(1,2,5),Array(1,3,6),Array(2,3,1)))}")
+    
+    // Test 10: Make Connected
+    println(s"Make Connected(4, [[0,1],[0,2],[1,2]]): ${makeConnected(4, Array(Array(0,1),Array(0,2),Array(1,2)))}")
   }
 }

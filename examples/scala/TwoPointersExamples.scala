@@ -1,74 +1,222 @@
 import scala.collection.mutable
 
-/**
- * Two Pointers Pattern - 10 Essential Problems
- * Minimal implementations for coding interviews
- */
 object ScalaTwoPointersExamples {
   
-  // Problem 1: [Add specific problem here]
-  def problem1(nums: Array[Int]): Int = {
-    // TODO: Implement problem 1
-    0
+  // 1. Two Sum II - Input Array Is Sorted
+  def twoSum(numbers: Array[Int], target: Int): Array[Int] = {
+    var left = 0
+    var right = numbers.length - 1
+    while (left < right) {
+      val sum = numbers(left) + numbers(right)
+      if (sum == target) return Array(left + 1, right + 1)
+      else if (sum < target) left += 1
+      else right -= 1
+    }
+    Array()
   }
   
-  // Problem 2: [Add specific problem here]
-  def problem2(nums: Array[Int]): Int = {
-    // TODO: Implement problem 2
-    0
+  // 2. 3Sum
+  def threeSum(nums: Array[Int]): List[List[Int]] = {
+    val sorted = nums.sorted
+    val result = mutable.ListBuffer[List[Int]]()
+    for (i <- sorted.indices.dropRight(2)) {
+      if (i == 0 || sorted(i) != sorted(i - 1)) {
+        var left = i + 1
+        var right = sorted.length - 1
+        while (left < right) {
+          val sum = sorted(i) + sorted(left) + sorted(right)
+          if (sum == 0) {
+            result += List(sorted(i), sorted(left), sorted(right))
+            while (left < right && sorted(left) == sorted(left + 1)) left += 1
+            while (left < right && sorted(right) == sorted(right - 1)) right -= 1
+            left += 1
+            right -= 1
+          } else if (sum < 0) left += 1
+          else right -= 1
+        }
+      }
+    }
+    result.toList
   }
   
-  // Problem 3: [Add specific problem here]
-  def problem3(nums: Array[Int]): Int = {
-    // TODO: Implement problem 3
-    0
+  // 3. Container With Most Water
+  def maxArea(height: Array[Int]): Int = {
+    var left = 0
+    var right = height.length - 1
+    var maxArea = 0
+    while (left < right) {
+      val area = math.min(height(left), height(right)) * (right - left)
+      maxArea = math.max(maxArea, area)
+      if (height(left) < height(right)) left += 1
+      else right -= 1
+    }
+    maxArea
   }
   
-  // Problem 4: [Add specific problem here]
-  def problem4(nums: Array[Int]): Int = {
-    // TODO: Implement problem 4
-    0
+  // 4. Valid Palindrome
+  def isPalindrome(s: String): Boolean = {
+    var left = 0
+    var right = s.length - 1
+    while (left < right) {
+      while (left < right && !s(left).isLetterOrDigit) left += 1
+      while (left < right && !s(right).isLetterOrDigit) right -= 1
+      if (s(left).toLower != s(right).toLower) return false
+      left += 1
+      right -= 1
+    }
+    true
   }
   
-  // Problem 5: [Add specific problem here]
-  def problem5(nums: Array[Int]): Int = {
-    // TODO: Implement problem 5
-    0
+  // 5. Remove Duplicates from Sorted Array
+  def removeDuplicates(nums: Array[Int]): Int = {
+    var slow = 0
+    for (fast <- 1 until nums.length) {
+      if (nums(fast) != nums(slow)) {
+        slow += 1
+        nums(slow) = nums(fast)
+      }
+    }
+    slow + 1
   }
   
-  // Problem 6: [Add specific problem here]
-  def problem6(nums: Array[Int]): Int = {
-    // TODO: Implement problem 6
-    0
+  // 6. Move Zeroes
+  def moveZeroes(nums: Array[Int]): Unit = {
+    var slow = 0
+    for (fast <- nums.indices) {
+      if (nums(fast) != 0) {
+        nums(slow) = nums(fast)
+        slow += 1
+      }
+    }
+    while (slow < nums.length) {
+      nums(slow) = 0
+      slow += 1
+    }
   }
   
-  // Problem 7: [Add specific problem here]
-  def problem7(nums: Array[Int]): Int = {
-    // TODO: Implement problem 7
-    0
+  // 7. Trapping Rain Water
+  def trap(height: Array[Int]): Int = {
+    var left = 0
+    var right = height.length - 1
+    var leftMax = 0
+    var rightMax = 0
+    var water = 0
+    while (left < right) {
+      if (height(left) < height(right)) {
+        if (height(left) >= leftMax) leftMax = height(left)
+        else water += leftMax - height(left)
+        left += 1
+      } else {
+        if (height(right) >= rightMax) rightMax = height(right)
+        else water += rightMax - height(right)
+        right -= 1
+      }
+    }
+    water
   }
   
-  // Problem 8: [Add specific problem here]
-  def problem8(nums: Array[Int]): Int = {
-    // TODO: Implement problem 8
-    0
+  // 8. Sort Colors
+  def sortColors(nums: Array[Int]): Unit = {
+    var left = 0
+    var right = nums.length - 1
+    var i = 0
+    while (i <= right) {
+      if (nums(i) == 0) {
+        val temp = nums(i)
+        nums(i) = nums(left)
+        nums(left) = temp
+        left += 1
+        i += 1
+      } else if (nums(i) == 2) {
+        val temp = nums(i)
+        nums(i) = nums(right)
+        nums(right) = temp
+        right -= 1
+      } else {
+        i += 1
+      }
+    }
   }
   
-  // Problem 9: [Add specific problem here]
-  def problem9(nums: Array[Int]): Int = {
-    // TODO: Implement problem 9
-    0
+  // 9. 4Sum
+  def fourSum(nums: Array[Int], target: Int): List[List[Int]] = {
+    val sorted = nums.sorted
+    val result = mutable.ListBuffer[List[Int]]()
+    for (i <- sorted.indices.dropRight(3)) {
+      if (i == 0 || sorted(i) != sorted(i - 1)) {
+        for (j <- (i + 1) until sorted.length - 2) {
+          if (j == i + 1 || sorted(j) != sorted(j - 1)) {
+            var left = j + 1
+            var right = sorted.length - 1
+            while (left < right) {
+              val sum = sorted(i) + sorted(j) + sorted(left) + sorted(right)
+              if (sum == target) {
+                result += List(sorted(i), sorted(j), sorted(left), sorted(right))
+                while (left < right && sorted(left) == sorted(left + 1)) left += 1
+                while (left < right && sorted(right) == sorted(right - 1)) right -= 1
+                left += 1
+                right -= 1
+              } else if (sum < target) left += 1
+              else right -= 1
+            }
+          }
+        }
+      }
+    }
+    result.toList
   }
   
-  // Problem 10: [Add specific problem here]
-  def problem10(nums: Array[Int]): Int = {
-    // TODO: Implement problem 10
-    0
+  // 10. Reverse String
+  def reverseString(s: Array[Char]): Unit = {
+    var left = 0
+    var right = s.length - 1
+    while (left < right) {
+      val temp = s(left)
+      s(left) = s(right)
+      s(right) = temp
+      left += 1
+      right -= 1
+    }
   }
   
   def main(args: Array[String]): Unit = {
     println("=== Two Pointers Examples ===")
-    println("TODO: Add test cases")
-    println("All two pointers examples ready for implementation!")
+    
+    // Test 1: Two Sum II
+    println(s"Two Sum II([2,7,11,15], 9): ${twoSum(Array(2,7,11,15), 9).mkString("[", ",", "]")}")
+    
+    // Test 2: 3Sum
+    println(s"3Sum([-1,0,1,2,-1,-4]): ${threeSum(Array(-1,0,1,2,-1,-4))}")
+    
+    // Test 3: Container With Most Water
+    println(s"Max Area([1,8,6,2,5,4,8,3,7]): ${maxArea(Array(1,8,6,2,5,4,8,3,7))}")
+    
+    // Test 4: Valid Palindrome
+    println(s"Is Palindrome('A man, a plan, a canal: Panama'): ${isPalindrome("A man, a plan, a canal: Panama")}")
+    
+    // Test 5: Remove Duplicates
+    val nums = Array(1,1,2)
+    println(s"Remove Duplicates([1,1,2]): ${removeDuplicates(nums)}")
+    
+    // Test 6: Move Zeroes
+    val nums2 = Array(0,1,0,3,12)
+    moveZeroes(nums2)
+    println(s"Move Zeroes([0,1,0,3,12]): ${nums2.mkString("[", ",", "]")}")
+    
+    // Test 7: Trapping Rain Water
+    println(s"Trap([0,1,0,2,1,0,1,3,2,1,2,1]): ${trap(Array(0,1,0,2,1,0,1,3,2,1,2,1))}")
+    
+    // Test 8: Sort Colors
+    val colors = Array(2,0,2,1,1,0)
+    sortColors(colors)
+    println(s"Sort Colors([2,0,2,1,1,0]): ${colors.mkString("[", ",", "]")}")
+    
+    // Test 9: 4Sum
+    println(s"4Sum([1,0,-1,0,-2,2], 0): ${fourSum(Array(1,0,-1,0,-2,2), 0)}")
+    
+    // Test 10: Reverse String
+    val str = Array('h','e','l','l','o')
+    reverseString(str)
+    println(s"Reverse String(['h','e','l','l','o']): ${str.mkString("[", ",", "]")}")
   }
 }

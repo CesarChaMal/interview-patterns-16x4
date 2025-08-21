@@ -1,74 +1,229 @@
 import scala.collection.mutable
 
-/**
- * Monotonic Stack Pattern - 10 Essential Problems
- * Minimal implementations for coding interviews
- */
 object ScalaMonotonicStackExamples {
   
-  // Problem 1: [Add specific problem here]
-  def problem1(nums: Array[Int]): Int = {
-    // TODO: Implement problem 1
-    0
+  // 1. Next Greater Element I
+  def nextGreaterElement(nums1: Array[Int], nums2: Array[Int]): Array[Int] = {
+    val stack = mutable.Stack[Int]()
+    val map = mutable.Map[Int, Int]()
+    
+    for (num <- nums2) {
+      while (stack.nonEmpty && stack.top < num) {
+        map(stack.pop()) = num
+      }
+      stack.push(num)
+    }
+    
+    nums1.map(map.getOrElse(_, -1))
   }
   
-  // Problem 2: [Add specific problem here]
-  def problem2(nums: Array[Int]): Int = {
-    // TODO: Implement problem 2
-    0
+  // 2. Daily Temperatures
+  def dailyTemperatures(temperatures: Array[Int]): Array[Int] = {
+    val result = Array.fill(temperatures.length)(0)
+    val stack = mutable.Stack[Int]()
+    
+    for (i <- temperatures.indices) {
+      while (stack.nonEmpty && temperatures(stack.top) < temperatures(i)) {
+        val idx = stack.pop()
+        result(idx) = i - idx
+      }
+      stack.push(i)
+    }
+    
+    result
   }
   
-  // Problem 3: [Add specific problem here]
-  def problem3(nums: Array[Int]): Int = {
-    // TODO: Implement problem 3
-    0
+  // 3. Largest Rectangle in Histogram
+  def largestRectangleArea(heights: Array[Int]): Int = {
+    val stack = mutable.Stack[Int]()
+    var maxArea = 0
+    
+    for (i <- 0 to heights.length) {
+      val h = if (i == heights.length) 0 else heights(i)
+      while (stack.nonEmpty && heights(stack.top) > h) {
+        val height = heights(stack.pop())
+        val width = if (stack.isEmpty) i else i - stack.top - 1
+        maxArea = math.max(maxArea, height * width)
+      }
+      stack.push(i)
+    }
+    
+    maxArea
   }
   
-  // Problem 4: [Add specific problem here]
-  def problem4(nums: Array[Int]): Int = {
-    // TODO: Implement problem 4
-    0
+  // 4. Trapping Rain Water
+  def trap(height: Array[Int]): Int = {
+    val stack = mutable.Stack[Int]()
+    var water = 0
+    
+    for (i <- height.indices) {
+      while (stack.nonEmpty && height(i) > height(stack.top)) {
+        val top = stack.pop()
+        if (stack.nonEmpty) {
+          val distance = i - stack.top - 1
+          val boundedHeight = math.min(height(i), height(stack.top)) - height(top)
+          water += distance * boundedHeight
+        }
+      }
+      stack.push(i)
+    }
+    
+    water
   }
   
-  // Problem 5: [Add specific problem here]
-  def problem5(nums: Array[Int]): Int = {
-    // TODO: Implement problem 5
-    0
+  // 5. Remove Duplicate Letters
+  def removeDuplicateLetters(s: String): String = {
+    val count = Array.fill(26)(0)
+    val inStack = Array.fill(26)(false)
+    val stack = mutable.Stack[Char]()
+    
+    s.foreach(c => count(c - 'a') += 1)
+    
+    for (c <- s) {
+      count(c - 'a') -= 1
+      if (inStack(c - 'a')) continue
+      
+      while (stack.nonEmpty && stack.top > c && count(stack.top - 'a') > 0) {
+        inStack(stack.pop() - 'a') = false
+      }
+      stack.push(c)
+      inStack(c - 'a') = true
+    }
+    
+    stack.reverse.mkString
   }
   
-  // Problem 6: [Add specific problem here]
-  def problem6(nums: Array[Int]): Int = {
-    // TODO: Implement problem 6
-    0
+  // 6. Next Greater Elements II
+  def nextGreaterElements(nums: Array[Int]): Array[Int] = {
+    val n = nums.length
+    val result = Array.fill(n)(-1)
+    val stack = mutable.Stack[Int]()
+    
+    for (i <- 0 until 2 * n) {
+      while (stack.nonEmpty && nums(stack.top) < nums(i % n)) {
+        result(stack.pop()) = nums(i % n)
+      }
+      if (i < n) stack.push(i)
+    }
+    
+    result
   }
   
-  // Problem 7: [Add specific problem here]
-  def problem7(nums: Array[Int]): Int = {
-    // TODO: Implement problem 7
-    0
+  // 7. Valid Parentheses
+  def isValid(s: String): Boolean = {
+    val stack = mutable.Stack[Char]()
+    val mapping = Map(')' -> '(', '}' -> '{', ']' -> '[')
+    
+    for (c <- s) {
+      if (mapping.contains(c)) {
+        if (stack.isEmpty || stack.pop() != mapping(c)) return false
+      } else {
+        stack.push(c)
+      }
+    }
+    
+    stack.isEmpty
   }
   
-  // Problem 8: [Add specific problem here]
-  def problem8(nums: Array[Int]): Int = {
-    // TODO: Implement problem 8
-    0
+  // 8. Maximal Rectangle
+  def maximalRectangle(matrix: Array[Array[Char]]): Int = {
+    if (matrix.isEmpty) return 0
+    
+    val heights = Array.fill(matrix(0).length)(0)
+    var maxArea = 0
+    
+    for (row <- matrix) {
+      for (i <- row.indices) {
+        heights(i) = if (row(i) == '1') heights(i) + 1 else 0
+      }
+      maxArea = math.max(maxArea, largestRectangleArea(heights))
+    }
+    
+    maxArea
   }
   
-  // Problem 9: [Add specific problem here]
-  def problem9(nums: Array[Int]): Int = {
-    // TODO: Implement problem 9
-    0
+  // 9. Sum of Subarray Minimums
+  def sumSubarrayMins(arr: Array[Int]): Int = {
+    val MOD = 1000000007
+    val stack = mutable.Stack[Int]()
+    var result = 0L
+    
+    for (i <- 0 to arr.length) {
+      while (stack.nonEmpty && (i == arr.length || arr(stack.top) >= arr(i))) {
+        val mid = stack.pop()
+        val left = if (stack.isEmpty) -1 else stack.top
+        val right = i
+        val count = (mid - left).toLong * (right - mid)
+        result = (result + count * arr(mid)) % MOD
+      }
+      stack.push(i)
+    }
+    
+    result.toInt
   }
   
-  // Problem 10: [Add specific problem here]
-  def problem10(nums: Array[Int]): Int = {
-    // TODO: Implement problem 10
-    0
+  // 10. Minimum Stack
+  class MinStack {
+    private val stack = mutable.Stack[Int]()
+    private val minStack = mutable.Stack[Int]()
+    
+    def push(x: Int): Unit = {
+      stack.push(x)
+      if (minStack.isEmpty || x <= minStack.top) {
+        minStack.push(x)
+      }
+    }
+    
+    def pop(): Unit = {
+      if (stack.pop() == minStack.top) {
+        minStack.pop()
+      }
+    }
+    
+    def top(): Int = stack.top
+    
+    def getMin(): Int = minStack.top
   }
   
   def main(args: Array[String]): Unit = {
     println("=== Monotonic Stack Examples ===")
-    println("TODO: Add test cases")
-    println("All monotonic stack examples ready for implementation!")
+    
+    // Test 1: Next Greater Element I
+    println(s"Next Greater Element I([4,1,2], [1,3,4,2]): ${nextGreaterElement(Array(4,1,2), Array(1,3,4,2)).mkString("[", ",", "]")}")
+    
+    // Test 2: Daily Temperatures
+    println(s"Daily Temperatures([73,74,75,71,69,72,76,73]): ${dailyTemperatures(Array(73,74,75,71,69,72,76,73)).mkString("[", ",", "]")}")
+    
+    // Test 3: Largest Rectangle in Histogram
+    println(s"Largest Rectangle([2,1,5,6,2,3]): ${largestRectangleArea(Array(2,1,5,6,2,3))}")
+    
+    // Test 4: Trapping Rain Water
+    println(s"Trap([0,1,0,2,1,0,1,3,2,1,2,1]): ${trap(Array(0,1,0,2,1,0,1,3,2,1,2,1))}")
+    
+    // Test 5: Remove Duplicate Letters
+    println(s"Remove Duplicate Letters('bcabc'): ${removeDuplicateLetters("bcabc")}")
+    
+    // Test 6: Next Greater Elements II
+    println(s"Next Greater Elements II([1,2,1]): ${nextGreaterElements(Array(1,2,1)).mkString("[", ",", "]")}")
+    
+    // Test 7: Valid Parentheses
+    println(s"Valid Parentheses('()[]{}'): ${isValid("()[]{}}")}")
+    
+    // Test 8: Maximal Rectangle
+    val matrix = Array(Array('1','0','1','0','0'),Array('1','0','1','1','1'),Array('1','1','1','1','1'),Array('1','0','0','1','0'))
+    println(s"Maximal Rectangle: ${maximalRectangle(matrix)}")
+    
+    // Test 9: Sum of Subarray Minimums
+    println(s"Sum Subarray Mins([3,1,2,4]): ${sumSubarrayMins(Array(3,1,2,4))}")
+    
+    // Test 10: Min Stack
+    val minStack = new MinStack()
+    minStack.push(-2)
+    minStack.push(0)
+    minStack.push(-3)
+    println(s"Min Stack getMin(): ${minStack.getMin()}")
+    minStack.pop()
+    println(s"Min Stack top(): ${minStack.top()}")
+    println(s"Min Stack getMin(): ${minStack.getMin()}")
   }
 }

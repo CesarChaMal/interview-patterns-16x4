@@ -1,74 +1,308 @@
 import scala.collection.mutable
 
-/**
- * BFS Pattern - 10 Essential Problems
- * Minimal implementations for coding interviews
- */
 object ScalaBFSExamples {
   
-  // Problem 1: [Add specific problem here]
-  def problem1(nums: Array[Int]): Int = {
-    // TODO: Implement problem 1
+  case class TreeNode(var value: Int = 0, var left: TreeNode = null, var right: TreeNode = null)
+  
+  // 1. Binary Tree Level Order Traversal
+  def levelOrder(root: TreeNode): List[List[Int]] = {
+    if (root == null) return List()
+    
+    val result = mutable.ListBuffer[List[Int]]()
+    val queue = mutable.Queue[TreeNode](root)
+    
+    while (queue.nonEmpty) {
+      val levelSize = queue.size
+      val level = mutable.ListBuffer[Int]()
+      for (_ <- 0 until levelSize) {
+        val node = queue.dequeue()
+        level += node.value
+        if (node.left != null) queue.enqueue(node.left)
+        if (node.right != null) queue.enqueue(node.right)
+      }
+      result += level.toList
+    }
+    result.toList
+  }
+  
+  // 2. Number of Islands
+  def numIslands(grid: Array[Array[Char]]): Int = {
+    if (grid.isEmpty) return 0
+    
+    var count = 0
+    for (i <- grid.indices; j <- grid(0).indices) {
+      if (grid(i)(j) == '1') {
+        bfsIslands(grid, i, j)
+        count += 1
+      }
+    }
+    count
+  }
+  
+  private def bfsIslands(grid: Array[Array[Char]], i: Int, j: Int): Unit = {
+    val queue = mutable.Queue[(Int, Int)]((i, j))
+    grid(i)(j) = '0'
+    
+    val directions = Array((0, 1), (1, 0), (0, -1), (-1, 0))
+    while (queue.nonEmpty) {
+      val (x, y) = queue.dequeue()
+      for ((dx, dy) <- directions) {
+        val nx = x + dx
+        val ny = y + dy
+        if (nx >= 0 && nx < grid.length && ny >= 0 && ny < grid(0).length && grid(nx)(ny) == '1') {
+          grid(nx)(ny) = '0'
+          queue.enqueue((nx, ny))
+        }
+      }
+    }
+  }
+  
+  // 3. Rotting Oranges
+  def orangesRotting(grid: Array[Array[Int]]): Int = {
+    val queue = mutable.Queue[(Int, Int)]()
+    var fresh = 0
+    
+    for (i <- grid.indices; j <- grid(0).indices) {
+      if (grid(i)(j) == 2) queue.enqueue((i, j))
+      else if (grid(i)(j) == 1) fresh += 1
+    }
+    
+    if (fresh == 0) return 0
+    
+    var minutes = 0
+    val directions = Array((0, 1), (1, 0), (0, -1), (-1, 0))
+    
+    while (queue.nonEmpty) {
+      val size = queue.size
+      for (_ <- 0 until size) {
+        val (x, y) = queue.dequeue()
+        for ((dx, dy) <- directions) {
+          val nx = x + dx
+          val ny = y + dy
+          if (nx >= 0 && nx < grid.length && ny >= 0 && ny < grid(0).length && grid(nx)(ny) == 1) {
+            grid(nx)(ny) = 2
+            queue.enqueue((nx, ny))
+            fresh -= 1
+          }
+        }
+      }
+      minutes += 1
+    }
+    
+    if (fresh == 0) minutes - 1 else -1
+  }
+  
+  // 4. Word Ladder
+  def ladderLength(beginWord: String, endWord: String, wordList: List[String]): Int = {
+    val wordSet = mutable.Set(wordList: _*)
+    if (!wordSet.contains(endWord)) return 0
+    
+    val queue = mutable.Queue[String](beginWord)
+    var level = 1
+    
+    while (queue.nonEmpty) {
+      val size = queue.size
+      for (_ <- 0 until size) {
+        val word = queue.dequeue()
+        if (word == endWord) return level
+        
+        for (i <- word.indices; c <- 'a' to 'z') {
+          val newWord = word.substring(0, i) + c + word.substring(i + 1)
+          if (wordSet.contains(newWord)) {
+            wordSet.remove(newWord)
+            queue.enqueue(newWord)
+          }
+        }
+      }
+      level += 1
+    }
     0
   }
   
-  // Problem 2: [Add specific problem here]
-  def problem2(nums: Array[Int]): Int = {
-    // TODO: Implement problem 2
-    0
+  // 5. Minimum Depth of Binary Tree
+  def minDepth(root: TreeNode): Int = {
+    if (root == null) return 0
+    
+    val queue = mutable.Queue[TreeNode](root)
+    var depth = 1
+    
+    while (queue.nonEmpty) {
+      val size = queue.size
+      for (_ <- 0 until size) {
+        val node = queue.dequeue()
+        if (node.left == null && node.right == null) return depth
+        if (node.left != null) queue.enqueue(node.left)
+        if (node.right != null) queue.enqueue(node.right)
+      }
+      depth += 1
+    }
+    depth
   }
   
-  // Problem 3: [Add specific problem here]
-  def problem3(nums: Array[Int]): Int = {
-    // TODO: Implement problem 3
-    0
+  // 6. Open the Lock
+  def openLock(deadends: Array[String], target: String): Int = {
+    val dead = deadends.toSet
+    if (dead.contains("0000")) return -1
+    
+    val queue = mutable.Queue[String]("0000")
+    val visited = mutable.Set("0000")
+    var steps = 0
+    
+    while (queue.nonEmpty) {
+      val size = queue.size
+      for (_ <- 0 until size) {
+        val curr = queue.dequeue()
+        if (curr == target) return steps
+        
+        for (i <- 0 until 4) {
+          val digit = curr(i).asDigit
+          for (d <- Array(-1, 1)) {
+            val newDigit = (digit + d + 10) % 10
+            val newCombo = curr.substring(0, i) + newDigit + curr.substring(i + 1)
+            if (!dead.contains(newCombo) && !visited.contains(newCombo)) {
+              visited.add(newCombo)
+              queue.enqueue(newCombo)
+            }
+          }
+        }
+      }
+      steps += 1
+    }
+    -1
   }
   
-  // Problem 4: [Add specific problem here]
-  def problem4(nums: Array[Int]): Int = {
-    // TODO: Implement problem 4
-    0
+  // 7. Binary Tree Right Side View
+  def rightSideView(root: TreeNode): List[Int] = {
+    if (root == null) return List()
+    
+    val result = mutable.ListBuffer[Int]()
+    val queue = mutable.Queue[TreeNode](root)
+    
+    while (queue.nonEmpty) {
+      val levelSize = queue.size
+      for (i <- 0 until levelSize) {
+        val node = queue.dequeue()
+        if (i == levelSize - 1) result += node.value
+        if (node.left != null) queue.enqueue(node.left)
+        if (node.right != null) queue.enqueue(node.right)
+      }
+    }
+    result.toList
   }
   
-  // Problem 5: [Add specific problem here]
-  def problem5(nums: Array[Int]): Int = {
-    // TODO: Implement problem 5
-    0
+  // 8. Shortest Path in Binary Matrix
+  def shortestPathBinaryMatrix(grid: Array[Array[Int]]): Int = {
+    if (grid(0)(0) == 1) return -1
+    val n = grid.length
+    if (n == 1) return 1
+    
+    val queue = mutable.Queue[(Int, Int, Int)]((0, 0, 1))
+    grid(0)(0) = 1
+    
+    val directions = Array((-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1), (1,0), (1,1))
+    
+    while (queue.nonEmpty) {
+      val (x, y, dist) = queue.dequeue()
+      for ((dx, dy) <- directions) {
+        val nx = x + dx
+        val ny = y + dy
+        if (nx == n - 1 && ny == n - 1) return dist + 1
+        if (nx >= 0 && nx < n && ny >= 0 && ny < n && grid(nx)(ny) == 0) {
+          grid(nx)(ny) = 1
+          queue.enqueue((nx, ny, dist + 1))
+        }
+      }
+    }
+    -1
   }
   
-  // Problem 6: [Add specific problem here]
-  def problem6(nums: Array[Int]): Int = {
-    // TODO: Implement problem 6
-    0
+  // 9. Perfect Squares
+  def numSquares(n: Int): Int = {
+    val queue = mutable.Queue[Int](n)
+    val visited = mutable.Set(n)
+    var level = 0
+    
+    while (queue.nonEmpty) {
+      level += 1
+      val size = queue.size
+      for (_ <- 0 until size) {
+        val curr = queue.dequeue()
+        var j = 1
+        while (j * j <= curr) {
+          val next = curr - j * j
+          if (next == 0) return level
+          if (!visited.contains(next)) {
+            visited.add(next)
+            queue.enqueue(next)
+          }
+          j += 1
+        }
+      }
+    }
+    level
   }
   
-  // Problem 7: [Add specific problem here]
-  def problem7(nums: Array[Int]): Int = {
-    // TODO: Implement problem 7
-    0
-  }
-  
-  // Problem 8: [Add specific problem here]
-  def problem8(nums: Array[Int]): Int = {
-    // TODO: Implement problem 8
-    0
-  }
-  
-  // Problem 9: [Add specific problem here]
-  def problem9(nums: Array[Int]): Int = {
-    // TODO: Implement problem 9
-    0
-  }
-  
-  // Problem 10: [Add specific problem here]
-  def problem10(nums: Array[Int]): Int = {
-    // TODO: Implement problem 10
-    0
+  // 10. Walls and Gates
+  def wallsAndGates(rooms: Array[Array[Int]]): Unit = {
+    if (rooms.isEmpty) return
+    
+    val queue = mutable.Queue[(Int, Int)]()
+    for (i <- rooms.indices; j <- rooms(0).indices) {
+      if (rooms(i)(j) == 0) queue.enqueue((i, j))
+    }
+    
+    val directions = Array((0, 1), (1, 0), (0, -1), (-1, 0))
+    while (queue.nonEmpty) {
+      val (x, y) = queue.dequeue()
+      for ((dx, dy) <- directions) {
+        val nx = x + dx
+        val ny = y + dy
+        if (nx >= 0 && nx < rooms.length && ny >= 0 && ny < rooms(0).length && 
+            rooms(nx)(ny) == Int.MaxValue) {
+          rooms(nx)(ny) = rooms(x)(y) + 1
+          queue.enqueue((nx, ny))
+        }
+      }
+    }
   }
   
   def main(args: Array[String]): Unit = {
     println("=== BFS Examples ===")
-    println("TODO: Add test cases")
-    println("All bfs examples ready for implementation!")
+    
+    // Test 1: Level Order Traversal
+    val root = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))
+    println(s"Level Order: ${levelOrder(root)}")
+    
+    // Test 2: Number of Islands
+    val grid = Array(Array('1','1','0','0','0'),Array('1','1','0','0','0'),Array('0','0','1','0','0'),Array('0','0','0','1','1'))
+    println(s"Number of Islands: ${numIslands(grid)}")
+    
+    // Test 3: Rotting Oranges
+    val oranges = Array(Array(2,1,1),Array(1,1,0),Array(0,1,1))
+    println(s"Rotting Oranges: ${orangesRotting(oranges)}")
+    
+    // Test 4: Word Ladder
+    println(s"Word Ladder: ${ladderLength("hit", "cog", List("hot","dot","dog","lot","log","cog"))}")
+    
+    // Test 5: Minimum Depth
+    println(s"Min Depth: ${minDepth(root)}")
+    
+    // Test 6: Open the Lock
+    println(s"Open Lock: ${openLock(Array("0201","0101","0102","1212","2002"), "0202")}")
+    
+    // Test 7: Right Side View
+    println(s"Right Side View: ${rightSideView(root)}")
+    
+    // Test 8: Shortest Path Binary Matrix
+    val matrix = Array(Array(0,0,0),Array(1,1,0),Array(1,1,0))
+    println(s"Shortest Path: ${shortestPathBinaryMatrix(matrix)}")
+    
+    // Test 9: Perfect Squares
+    println(s"Perfect Squares(12): ${numSquares(12)}")
+    
+    // Test 10: Walls and Gates
+    val rooms = Array(Array(Int.MaxValue, -1, 0, Int.MaxValue))
+    wallsAndGates(rooms)
+    println("Walls and Gates completed")
   }
 }

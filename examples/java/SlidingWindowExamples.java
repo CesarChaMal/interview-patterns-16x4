@@ -1,74 +1,227 @@
 import java.util.*;
 
-/**
- * Sliding Window Pattern - 10 Essential Problems
- * Minimal implementations for coding interviews
- */
 public class SlidingWindowExamples {
     
-    // Problem 1: [Add specific problem here]
-    public int problem1(int[] nums) {
-        // TODO: Implement problem 1
-        return 0;
+    // 1. Maximum Subarray Sum of Size K
+    public int maxSubarraySum(int[] nums, int k) {
+        int sum = 0, maxSum = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (i >= k - 1) {
+                maxSum = Math.max(maxSum, sum);
+                sum -= nums[i - k + 1];
+            }
+        }
+        return maxSum;
     }
     
-    // Problem 2: [Add specific problem here]
-    public int problem2(int[] nums) {
-        // TODO: Implement problem 2
-        return 0;
+    // 2. Longest Substring Without Repeating Characters
+    public int lengthOfLongestSubstring(String s) {
+        Set<Character> set = new HashSet<>();
+        int left = 0, maxLen = 0;
+        for (int right = 0; right < s.length(); right++) {
+            while (set.contains(s.charAt(right))) {
+                set.remove(s.charAt(left++));
+            }
+            set.add(s.charAt(right));
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
     }
     
-    // Problem 3: [Add specific problem here]
-    public int problem3(int[] nums) {
-        // TODO: Implement problem 3
-        return 0;
+    // 3. Minimum Window Substring
+    public String minWindow(String s, String t) {
+        Map<Character, Integer> need = new HashMap<>();
+        for (char c : t.toCharArray()) need.put(c, need.getOrDefault(c, 0) + 1);
+        
+        int left = 0, right = 0, valid = 0, start = 0, len = Integer.MAX_VALUE;
+        Map<Character, Integer> window = new HashMap<>();
+        
+        while (right < s.length()) {
+            char c = s.charAt(right++);
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) valid++;
+            }
+            
+            while (valid == need.size()) {
+                if (right - left < len) {
+                    start = left;
+                    len = right - left;
+                }
+                char d = s.charAt(left++);
+                if (need.containsKey(d)) {
+                    if (window.get(d).equals(need.get(d))) valid--;
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return len == Integer.MAX_VALUE ? "" : s.substring(start, start + len);
     }
     
-    // Problem 4: [Add specific problem here]
-    public int problem4(int[] nums) {
-        // TODO: Implement problem 4
-        return 0;
+    // 4. Sliding Window Maximum
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        Deque<Integer> deque = new ArrayDeque<>();
+        int[] result = new int[nums.length - k + 1];
+        
+        for (int i = 0; i < nums.length; i++) {
+            while (!deque.isEmpty() && deque.peekFirst() < i - k + 1) {
+                deque.pollFirst();
+            }
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+            if (i >= k - 1) {
+                result[i - k + 1] = nums[deque.peekFirst()];
+            }
+        }
+        return result;
     }
     
-    // Problem 5: [Add specific problem here]
-    public int problem5(int[] nums) {
-        // TODO: Implement problem 5
-        return 0;
+    // 5. Longest Repeating Character Replacement
+    public int characterReplacement(String s, int k) {
+        int[] count = new int[26];
+        int left = 0, maxCount = 0, maxLen = 0;
+        
+        for (int right = 0; right < s.length(); right++) {
+            maxCount = Math.max(maxCount, ++count[s.charAt(right) - 'A']);
+            while (right - left + 1 - maxCount > k) {
+                count[s.charAt(left++) - 'A']--;
+            }
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
     }
     
-    // Problem 6: [Add specific problem here]
-    public int problem6(int[] nums) {
-        // TODO: Implement problem 6
-        return 0;
+    // 6. Permutation in String
+    public boolean checkInclusion(String s1, String s2) {
+        Map<Character, Integer> need = new HashMap<>();
+        for (char c : s1.toCharArray()) need.put(c, need.getOrDefault(c, 0) + 1);
+        
+        int left = 0, right = 0, valid = 0;
+        Map<Character, Integer> window = new HashMap<>();
+        
+        while (right < s2.length()) {
+            char c = s2.charAt(right++);
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) valid++;
+            }
+            
+            while (right - left >= s1.length()) {
+                if (valid == need.size()) return true;
+                char d = s2.charAt(left++);
+                if (need.containsKey(d)) {
+                    if (window.get(d).equals(need.get(d))) valid--;
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return false;
     }
     
-    // Problem 7: [Add specific problem here]
-    public int problem7(int[] nums) {
-        // TODO: Implement problem 7
-        return 0;
+    // 7. Find All Anagrams in a String
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        Map<Character, Integer> need = new HashMap<>();
+        for (char c : p.toCharArray()) need.put(c, need.getOrDefault(c, 0) + 1);
+        
+        int left = 0, right = 0, valid = 0;
+        Map<Character, Integer> window = new HashMap<>();
+        
+        while (right < s.length()) {
+            char c = s.charAt(right++);
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) valid++;
+            }
+            
+            while (right - left >= p.length()) {
+                if (valid == need.size()) result.add(left);
+                char d = s.charAt(left++);
+                if (need.containsKey(d)) {
+                    if (window.get(d).equals(need.get(d))) valid--;
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return result;
     }
     
-    // Problem 8: [Add specific problem here]
-    public int problem8(int[] nums) {
-        // TODO: Implement problem 8
-        return 0;
+    // 8. Longest Subarray with Ones after Replacement
+    public int longestOnes(int[] nums, int k) {
+        int left = 0, zeros = 0, maxLen = 0;
+        for (int right = 0; right < nums.length; right++) {
+            if (nums[right] == 0) zeros++;
+            while (zeros > k) {
+                if (nums[left++] == 0) zeros--;
+            }
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
     }
     
-    // Problem 9: [Add specific problem here]
-    public int problem9(int[] nums) {
-        // TODO: Implement problem 9
-        return 0;
+    // 9. Subarray Product Less Than K
+    public int numSubarrayProductLessThanK(int[] nums, int k) {
+        if (k <= 1) return 0;
+        int left = 0, product = 1, count = 0;
+        for (int right = 0; right < nums.length; right++) {
+            product *= nums[right];
+            while (product >= k) {
+                product /= nums[left++];
+            }
+            count += right - left + 1;
+        }
+        return count;
     }
     
-    // Problem 10: [Add specific problem here]
-    public int problem10(int[] nums) {
-        // TODO: Implement problem 10
-        return 0;
+    // 10. Minimum Size Subarray Sum
+    public int minSubArrayLen(int target, int[] nums) {
+        int left = 0, sum = 0, minLen = Integer.MAX_VALUE;
+        for (int right = 0; right < nums.length; right++) {
+            sum += nums[right];
+            while (sum >= target) {
+                minLen = Math.min(minLen, right - left + 1);
+                sum -= nums[left++];
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? 0 : minLen;
     }
     
     public static void main(String[] args) {
+        SlidingWindowExamples examples = new SlidingWindowExamples();
+        
         System.out.println("=== Sliding Window Examples ===");
-        System.out.println("TODO: Add test cases");
-        System.out.println("All sliding window examples ready for implementation!");
+        
+        // Test 1: Maximum Subarray Sum
+        System.out.println("Max Subarray Sum([2,1,5,1,3,2], k=3): " + examples.maxSubarraySum(new int[]{2,1,5,1,3,2}, 3));
+        
+        // Test 2: Longest Substring Without Repeating
+        System.out.println("Longest Substring 'abcabcbb': " + examples.lengthOfLongestSubstring("abcabcbb"));
+        
+        // Test 3: Minimum Window Substring
+        System.out.println("Min Window('ADOBECODEBANC', 'ABC'): " + examples.minWindow("ADOBECODEBANC", "ABC"));
+        
+        // Test 4: Sliding Window Maximum
+        System.out.println("Sliding Window Max([1,3,-1,-3,5,3,6,7], k=3): " + Arrays.toString(examples.maxSlidingWindow(new int[]{1,3,-1,-3,5,3,6,7}, 3)));
+        
+        // Test 5: Character Replacement
+        System.out.println("Character Replacement('ABAB', k=2): " + examples.characterReplacement("ABAB", 2));
+        
+        // Test 6: Permutation in String
+        System.out.println("Check Inclusion('ab', 'eidbaooo'): " + examples.checkInclusion("ab", "eidbaooo"));
+        
+        // Test 7: Find Anagrams
+        System.out.println("Find Anagrams('cbaebabacd', 'abc'): " + examples.findAnagrams("cbaebabacd", "abc"));
+        
+        // Test 8: Longest Ones
+        System.out.println("Longest Ones([1,1,1,0,0,0,1,1,1,1,0], k=2): " + examples.longestOnes(new int[]{1,1,1,0,0,0,1,1,1,1,0}, 2));
+        
+        // Test 9: Subarray Product Less Than K
+        System.out.println("Subarray Product([10,5,2,6], k=100): " + examples.numSubarrayProductLessThanK(new int[]{10,5,2,6}, 100));
+        
+        // Test 10: Minimum Size Subarray Sum
+        System.out.println("Min Subarray Len(target=7, [2,3,1,2,4,3]): " + examples.minSubArrayLen(7, new int[]{2,3,1,2,4,3}));
     }
 }
