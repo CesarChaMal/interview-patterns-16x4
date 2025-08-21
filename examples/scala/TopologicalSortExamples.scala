@@ -69,7 +69,8 @@ object ScalaTopologicalSortExamples {
       val w2 = words(i + 1)
       if (w1.length > w2.length && w1.startsWith(w2)) return ""
       
-      for (j <- 0 until math.min(w1.length, w2.length)) {
+      var found = false
+      for (j <- 0 until math.min(w1.length, w2.length) if !found) {
         val c1 = w1(j)
         val c2 = w2(j)
         if (c1 != c2) {
@@ -77,7 +78,7 @@ object ScalaTopologicalSortExamples {
             graph(c1) += c2
             indegree(c2) += 1
           }
-          break
+          found = true
         }
       }
     }
@@ -85,7 +86,7 @@ object ScalaTopologicalSortExamples {
     val queue = mutable.Queue[Char]()
     for ((char, deg) <- indegree if deg == 0) queue.enqueue(char)
     
-    val result = mutable.StringBuilder()
+    val result = new mutable.StringBuilder()
     while (queue.nonEmpty) {
       val char = queue.dequeue()
       result += char

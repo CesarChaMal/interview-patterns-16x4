@@ -1,6 +1,6 @@
 import scala.collection.mutable
 
-class ScalaUnionFind(n: Int) {
+class UnionFind(n: Int) {
   private val parent = Array.range(0, n)
   private val rank = Array.fill(n)(0)
   var components = n
@@ -32,7 +32,7 @@ class ScalaUnionFind(n: Int) {
   def connected(x: Int, y: Int): Boolean = find(x) == find(y)
 }
 
-object ScalaUnionFindExamples {
+object UnionFindExamples {
   
   // 1. Number of Islands
   def numIslands(grid: Array[Array[Char]]): Int = {

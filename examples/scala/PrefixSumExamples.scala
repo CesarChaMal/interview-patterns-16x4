@@ -72,7 +72,7 @@ object ScalaPrefixSumExamples {
     var maxLen = 0
     
     for (i <- nums.indices) {
-      sum += if (nums(i) == 1) 1 else -1
+      sum += (if (nums(i) == 1) 1 else -1)
       if (map.contains(sum)) {
         maxLen = math.max(maxLen, i - map(sum))
       } else {

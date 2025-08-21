@@ -25,7 +25,7 @@ object ScalaLinkedListReversalExamples {
     for (_ <- 1 until left) prev = prev.next
     
     val start = prev.next
-    val then = start.next
+    var then = start.next
     
     for (_ <- 0 until right - left) {
       start.next = then.next
@@ -47,16 +47,19 @@ object ScalaLinkedListReversalExamples {
     
     if (count == k) {
       curr = reverseKGroup(curr, k)
+      var currentHead = head
       while (count > 0) {
-        val tmp = head.next
-        head.next = curr
-        curr = head
-        head = tmp
+        val tmp = currentHead.next
+        currentHead.next = curr
+        curr = currentHead
+        currentHead = tmp
         count -= 1
       }
-      head = curr
+      currentHead = curr
+      currentHead
+    } else {
+      head
     }
-    head
   }
   
   // 4. Swap Nodes in Pairs
@@ -102,8 +105,8 @@ object ScalaLinkedListReversalExamples {
   def oddEvenList(head: ListNode): ListNode = {
     if (head == null) return null
     
-    val odd = head
-    val even = head.next
+    var odd = head
+    var even = head.next
     val evenHead = even
     
     while (even != null && even.next != null) {
@@ -123,15 +126,16 @@ object ScalaLinkedListReversalExamples {
     var before = beforeHead
     var after = afterHead
     
-    while (head != null) {
-      if (head.x < x) {
-        before.next = head
+    var currentHead = head
+    while (currentHead != null) {
+      if (currentHead.x < x) {
+        before.next = currentHead
         before = before.next
       } else {
-        after.next = head
+        after.next = currentHead
         after = after.next
       }
-      head = head.next
+      currentHead = currentHead.next
     }
     
     after.next = null
@@ -144,15 +148,17 @@ object ScalaLinkedListReversalExamples {
     val dummy = new ListNode(0)
     var curr = dummy
     var carry = 0
+    var current1 = l1
+    var current2 = l2
     
-    while (l1 != null || l2 != null || carry != 0) {
-      val sum = (if (l1 != null) l1.x else 0) + (if (l2 != null) l2.x else 0) + carry
+    while (current1 != null || current2 != null || carry != 0) {
+      val sum = (if (current1 != null) current1.x else 0) + (if (current2 != null) current2.x else 0) + carry
       carry = sum / 10
       curr.next = new ListNode(sum % 10)
       curr = curr.next
       
-      if (l1 != null) l1 = l1.next
-      if (l2 != null) l2 = l2.next
+      if (current1 != null) current1 = current1.next
+      if (current2 != null) current2 = current2.next
     }
     dummy.next
   }
@@ -162,17 +168,18 @@ object ScalaLinkedListReversalExamples {
     val dummy = new ListNode(0)
     dummy.next = head
     var prev = dummy
+    var current = head
     
-    while (head != null) {
-      if (head.next != null && head.x == head.next.x) {
-        while (head.next != null && head.x == head.next.x) {
-          head = head.next
+    while (current != null) {
+      if (current.next != null && current.x == current.next.x) {
+        while (current.next != null && current.x == current.next.x) {
+          current = current.next
         }
-        prev.next = head.next
+        prev.next = current.next
       } else {
         prev = prev.next
       }
-      head = head.next
+      current = current.next
     }
     dummy.next
   }

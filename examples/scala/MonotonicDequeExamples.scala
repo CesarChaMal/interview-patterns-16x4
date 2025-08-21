@@ -165,7 +165,7 @@ object ScalaMonotonicDequeExamples {
       var drop = nums.length - k
       for (num <- nums) {
         while (result.nonEmpty && result.last < num && drop > 0) {
-          result.removeLast()
+          result.remove(result.length - 1)
           drop -= 1
         }
         if (result.length < k) {
