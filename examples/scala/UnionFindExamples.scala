@@ -32,7 +32,7 @@ class ScalaUnionFind(n: Int) {
   def connected(x: Int, y: Int): Boolean = find(x) == find(y)
 }
 
-object UnionFindExamples {
+object ScalaUnionFindExamples {
   
   // 1. Number of Islands
   def numIslands(grid: Array[Array[Char]]): Int = {
